@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyalb"
+dynamic = ["version"]
+description = "A simple application load balancer"
+authors = [{ name = "Aryan Sharma", email = "aryansharma.work101@gmail.com" }]
+
+[project.license]
+file = "LICENSE"
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://github.com/AryanSharma5/pyalb"
+Issues = "https://github.com/AryanSharma5/pyalb/issues"
+
+[project.scripts]
+pyalb = "pyalb.main:main"
+
+[tool.setuptools]
+zip-safe = false
+license-files = ["LICENSE"]
+
+[tool.setuptools_scm]
+write_to = "pyalb/_version.py"
+local_scheme = "no-local-version"
