@@ -1,10 +1,15 @@
+import sys
 import inspect
 
-import pyalb.routing.routing_strategy as routing_strategy
-from .routing_context import RoutingContext
+from .base import IRoutingStrategy
+from .context import RoutingContext
+from .strategies import *
 
 SUPPORTED_ROUTING_ALGORITHMS = {
     cls.__name__: cls
-    for _, cls in inspect.getmembers(routing_strategy, inspect.isclass)
-    if issubclass(cls, routing_strategy.IRoutingStrategy)
+    for _, cls in inspect.getmembers(sys.modules[__name__], inspect.isclass)
+    if issubclass(cls, IRoutingStrategy)
 }
+
+
+__all__ = ["SUPPORTED_ROUTING_ALGORITHMS", "RoutingContext"]

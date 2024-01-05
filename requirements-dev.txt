@@ -1,1 +1,2 @@
+# Install pyalb in editable mode
 -e .

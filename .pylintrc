@@ -109,6 +109,8 @@ disable=
     fixme,
     cyclic-import,
     import-error,
+    consider-using-alias,
+    undefined-all-variable,
 
 
 [REPORTS]

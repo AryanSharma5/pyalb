@@ -1,6 +1,4 @@
-import typing as t
-
-from .routing_strategy import IRoutingStrategy
+from .base import IRoutingStrategy
 from ..server import IServer
 
 
@@ -12,5 +10,5 @@ class RoutingContext:
     def routing_strategy(self):
         return self._routing_strategy
 
-    def route(self, servers: t.List[IServer]) -> IServer:
-        return self._routing_strategy.route(servers=servers)
+    def route(self) -> IServer:
+        return self._routing_strategy.route()

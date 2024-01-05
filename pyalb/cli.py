@@ -2,6 +2,8 @@ import argparse
 import logging
 import typing as t
 
+from .routing.strategies import __all__
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -24,11 +26,10 @@ def init_cli() -> t.Any:
     parser.add_argument(
         "--routing",
         "-R",
-        nargs=1,
         type=str,
         default="RoundRobbin",
         dest="routing",
-        choices=["Round Robbin"],
+        choices=__all__,
         help="Routing algorithm to use [default: RoundRobbin]",
     )
     parser.add_argument(

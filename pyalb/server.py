@@ -1,22 +1,16 @@
-import typing as t
-
-server_health_status = t.Literal["OK", "KO"]
-
-
 class IServer:
     id: str
     url: str
-    health: bool
+    is_healthy: bool
+    open_conns: int
 
 
 class Server(IServer):
-    def __init__(
-        self, server_id: str, url: str, health: server_health_status = "OK"
-    ) -> None:
+    def __init__(self, server_id: str, url: str, is_healthy: bool = True) -> None:
         self._id = server_id
         self._url = url
-        self._health = health
-        self._is_healthy = True
+        self._is_healthy = is_healthy
+        self._open_conns = 0
 
     @property
     def id(self) -> str:
@@ -27,14 +21,17 @@ class Server(IServer):
         return self._url
 
     @property
-    def health(self) -> server_health_status:
-        return self._health
-
-    @health.setter
-    def health(self, server_health: server_health_status) -> None:
-        self._health = server_health
-        self._is_healthy = True if self._health == "OK" else False
-
-    @property
     def is_healthy(self) -> bool:
         return self._is_healthy
+
+    @is_healthy.setter
+    def is_healthy(self, value: bool) -> None:
+        self._is_healthy = value
+
+    @property
+    def open_connections(self):
+        return self._open_conns
+
+    @open_connections.setter
+    def open_connections(self, value: int):
+        self._open_conns = value
