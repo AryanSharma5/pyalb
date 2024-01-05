@@ -1,61 +1,43 @@
-jobs:
-  init:
-    docker:
-      - image: cimg/python
-    steps:
-      - checkout
-      - run:
-          name: Install deps
-          command: make init
-  lint:
-    docker:
-      - image: cimg/python
-    steps:
-      - checkout
-      - run:
-          name: Static code checking
-          command: make lint
+version: 2.1
 
-  test:
+jobs:
+  dev:
     docker:
-      - image: cimg/python
+      - image: cimg/python:3.12
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: make init
+      - run:
+          name: Linting
+          command: make lint
       - run:
           name: Testing
           command: make test
-  
-  build_and_deploy:
+  prod:
     docker:
-      - image: cimg/python
+      - image: cimg/python:3.12
     steps:
       - checkout
       - run:
-          name: Build and deploy
-          command: echo "Build and deploy in progress.."
+          name: build
+          command: echo "Build in progress.."
+      - run:
+          name: deploy
+          command: echo "Deployment in progress.."
 
 workflows:
-  init-workflow:
-    jobs:
-      - init
   dev-worklow:
     jobs:
-      - lint:
-          depends-on:
-          filters:
-            branches:
-              only:
-                - dev
-      - test:
-          depends-on:
-            - lint
+      - dev:
           filters:
             branches:
               only:
                 - dev
   prod-workflow:
     jobs:
-      - build_and_deploy:
+      - prod:
           filters:
             branches:
               only:
