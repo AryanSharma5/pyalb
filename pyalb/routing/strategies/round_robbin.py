@@ -1,16 +1,21 @@
 import typing as t
-from itertools import cycle
 
 from ..base import IRoutingStrategy
 from ...server import IServer
 
 
 class RoundRobbin(IRoutingStrategy):
-    cycle_iter = None
-
     def __init__(self, servers: t.List[IServer]) -> None:
         self._servers = servers
-        self.cycle_iter = cycle(self._servers)
+        self._max_servers = len(servers)
+        self.server_idx = 0
+
+    def cycle(self) -> IServer:
+        if self.server_idx == self._max_servers:
+            self.server_idx = 0
+        chosen_server = self._servers[self.server_idx % self._max_servers]
+        self.server_idx += 1
+        return chosen_server
 
     def route(self) -> IServer:
         server = self._get_next_server()
@@ -18,4 +23,4 @@ class RoundRobbin(IRoutingStrategy):
         return server
 
     def _get_next_server(self) -> IServer:
-        return next(self.cycle_iter)
+        return self.cycle()

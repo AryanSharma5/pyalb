@@ -38,7 +38,6 @@ class HttpServer(IHttpServer):
     def home(self, backend_server: IServer) -> t.Any:
         backend_server_address = backend_server.url
         response_content, status_code = self._serve_request(backend_server_address)
-        backend_server.open_connections -= 1
         return response_content, status_code
 
     def _serve_request(self, backend_server_address: str) -> t.Tuple[t.Any, int]:

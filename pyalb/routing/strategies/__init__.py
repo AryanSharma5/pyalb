@@ -1,4 +1,4 @@
-from .least_connections import LeastConnection
 from .round_robbin import RoundRobbin
+from .random_selection import RandomSelection
 
-__all__ = ["LeastConnection", "RoundRobbin"]
+__all__ = ["RoundRobbin", "RandomSelection"]

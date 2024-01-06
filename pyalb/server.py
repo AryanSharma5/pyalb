@@ -2,7 +2,6 @@ class IServer:
     id: str
     url: str
     is_healthy: bool
-    open_conns: int
 
 
 class Server(IServer):
@@ -10,7 +9,6 @@ class Server(IServer):
         self._id = server_id
         self._url = url
         self._is_healthy = is_healthy
-        self._open_conns = 0
 
     @property
     def id(self) -> str:
@@ -27,11 +25,3 @@ class Server(IServer):
     @is_healthy.setter
     def is_healthy(self, value: bool) -> None:
         self._is_healthy = value
-
-    @property
-    def open_connections(self):
-        return self._open_conns
-
-    @open_connections.setter
-    def open_connections(self, value: int):
-        self._open_conns = value
