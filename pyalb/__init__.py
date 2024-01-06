@@ -1,2 +1,9 @@
+from importlib.metadata import version, PackageNotFoundError
+
 from pyalb import main
-from ._version import __version__
+
+try:
+    __version__ = version("pyalb")
+except PackageNotFoundError:
+    # package is not installed
+    pass
