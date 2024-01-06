@@ -2,11 +2,36 @@
 requires = ["setuptools>=61", "wheel", "setuptools_scm>=6.2"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+zip-safe = false
+license-files = ["LICENSE"]
+
+[tool.setuptools_scm]
+write_to = "pyalb/_version.py"
+local_scheme = "no-local-version"
+
 [project]
 name = "pyalb"
 dynamic = ["version"]
 description = "A simple application load balancer"
 authors = [{ name = "Aryan Sharma", email = "aryansharma.work101@gmail.com" }]
+maintainers = [{ name = "Aryan Sharma", email = "aryansharma.work101@gmail.com" }]
+dependencies = ["Flask==3.0.0", "requests==2.31.0"]
+requires-python = ">=3.8"
+keywords = [
+	"python", "load balancer", "flask", "round robbin", "random selection", "strategy", "pyalb", "load balancer cli", "circleci"
+]
+classifiers = [
+	"Development Status :: 2 - Pre-Alpha",
+	"License :: OSI Approved :: MIT License",
+	"Framework :: Flask",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3.10",
+	"Intended Audience :: Developers",
+	"Topic :: Software Development",
+	"Topic :: Software Development :: Libraries",
+	"Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [project.license]
 file = "LICENSE"
@@ -15,17 +40,9 @@ file = "LICENSE"
 file = "README.md"
 content-type = "text/markdown"
 
-[project.urls]
-Homepage = "https://github.com/AryanSharma5/pyalb"
-Issues = "https://github.com/AryanSharma5/pyalb/issues"
-
 [project.scripts]
 pyalb = "pyalb.main:main"
 
-[tool.setuptools]
-zip-safe = false
-license-files = ["LICENSE"]
-
-[tool.setuptools_scm]
-write_to = "pyalb/_version.py"
-local_scheme = "no-local-version"
+[project.urls]
+Homepage = "https://github.com/AryanSharma5/pyalb"
+Issues = "https://github.com/AryanSharma5/pyalb/issues"
