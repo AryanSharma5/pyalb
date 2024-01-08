@@ -3,6 +3,7 @@ import logging
 import typing as t
 
 from .routing.strategies import __all__
+from pyalb import __version__
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -13,6 +14,14 @@ def init_cli() -> t.Any:
         prog="pyalb",
         description="An application load balancer",
         epilog="Thanks for using pyalb!",
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        default=argparse.SUPPRESS,
+        version="%(prog)s (version " + __version__ + ")\n",
+        help="show program's version number and exit",
     )
     parser.add_argument(
         "--servers",
