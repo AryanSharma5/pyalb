@@ -8,6 +8,7 @@ license-files = ["LICENSE"]
 
 [tool.setuptools_scm]
 write_to = "pyalb/_version.py"
+version_scheme = "no-guess-dev"
 local_scheme = "no-local-version"
 
 [project]
