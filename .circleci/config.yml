@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  dev:
+  init:
     docker:
       - image: cimg/python:3.12
     steps:
@@ -9,36 +9,88 @@ jobs:
       - run:
           name: Install dependencies
           command: make init
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+  lint:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Linting
           command: make lint
+  test:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Testing
           command: make test
-  prod:
+  build:
     docker:
       - image: cimg/python:3.12
     steps:
       - checkout
       - run:
-          name: build
-          command: echo "Build in progress.."
+          name: Build and store artifacts
+          command: make build
+      - store_artifacts:
+          path: /tmp/workspace/artifacts
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - artifacts
+  release:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
-          name: deploy
-          command: echo "Deployment in progress.."
+          name: Release creation
+          command: make release
 
 workflows:
   dev-worklow:
     jobs:
-      - dev:
+      - init:
           filters:
             branches:
               only:
                 - dev
+      - lint:
+          filters:
+            branches:
+              only:
+                - dev
+          requires:
+            - init
+      - test:
+          filters:
+            branches:
+              only:
+                - dev
+          requires:
+            - lint
   prod-workflow:
     jobs:
-      - prod:
+      - build:
           filters:
             branches:
               only:
                 - master
+      - hold:
+          type: approval
+          requires:
+            - build
+      - release:
+          requires:
+            - hold
