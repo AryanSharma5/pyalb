@@ -1,7 +1,7 @@
 init:
 	python -m venv .env
 	ls -la .env
-	.env/bin/activate
+	source .env/bin/activate
 	python -m pip install -r requirements.txt
 #	mkdir -p /tmp/workspace/pyalb_env
 #	cp -r .env /tmp/workspace/pyalb_env/
