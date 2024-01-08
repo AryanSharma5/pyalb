@@ -8,14 +8,12 @@ init:
 	echo "Installation complete!"
 
 lint:
-	sudo su
-	.env/bin/activate
+	source .env/bin/activate
 	python -m pylint pyalb/
 	echo "Linting complete!"
 
 test:
-	sudo su
-	.env/bin/activate
+	source .env/bin/activate
 	python -m pytest
 	echo "Testing complete!"
 
