@@ -1,19 +1,19 @@
 init:
 	python -m venv .env
-	ls -la .env
-	source .env/bin/activate
+	sudo su
+	.env/bin/activate
 	python -m pip install -r requirements.txt
 #	mkdir -p /tmp/workspace/pyalb_env
 #	cp -r .env /tmp/workspace/pyalb_env/
 	echo "Installation complete!"
 
 lint:
-	source .env/bin/activate
+	.env/bin/activate
 	python -m pylint pyalb/
 	echo "Linting complete!"
 
 test:
-	source .env/bin/activate
+	.env/bin/activate
 	python -m pytest
 	echo "Testing complete!"
 
