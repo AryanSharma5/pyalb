@@ -1,5 +1,8 @@
 name: Pyalb Dev Workflow
-on: [push]
+on:
+  push:
+    branches:
+      - feat/migrate-to-github-actions
 jobs:
   init:
     runs-on: ubuntu-latest
