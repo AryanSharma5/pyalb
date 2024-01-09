@@ -1,21 +1,105 @@
-name: Pyalb Prod Workflow
+name: Publish Python 🐍 distribution 📦 to PyPI
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag (of vx.x.x form)"
+        required: true
+        type: string
 jobs:
-  build:
+  tag:
+    name: Create a tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ inputs.tag }}',
+              sha: context.sha
+            })
+  build:
+    name: Build distribution 📦
+    needs:
+    - tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          cache: pip
-      - run: python -m pip install -r requirements.txt
-      - run: echo "Installation complete"
-      - run: python -m build
-      - uses: actions/upload-artifact@v4
+      - name: Install pypa/build
+        run: python -m pip install build
+      - name: Build a binary wheel and a source tarball
+        run: python -m build
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
         with:
           name: pyalb-build-artifacts
           path: dist/
+  publish-to-pypi:
+    name: Publish Python 🐍 distribution 📦 to PyPI
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyalb
+    permissions:
+      id-token: write
+    steps:
+      - name: Download all the distributions
+        uses: actions/download-artifact@v3
+        with:
+          name: pyalb-build-artifacts
+          path: dist/
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+  github-release:
+    name: >-
+      Sign the Python 🐍 distribution 📦 with Sigstore
+      and upload them to GitHub Release
+    needs:
+    - publish-to-pypi
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: pyalb-build-artifacts
+        path: dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v1.2.3
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create
+        '${{ github.ref_name }}'
+        --repo '${{ github.repository }}'
+        --notes ""
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        '${{ github.ref_name }}' dist/**
+        --repo '${{ github.repository }}'
