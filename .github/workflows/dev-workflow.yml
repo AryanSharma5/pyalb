@@ -1,4 +1,4 @@
-name: Pyalb Dev Workflow
+name: Pyalb Dev 🔨 workflow
 on:
   push:
     branches:
