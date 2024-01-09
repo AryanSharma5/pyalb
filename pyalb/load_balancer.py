@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 import requests
 from flask import Flask, Response, make_response
 
+from .health_checker import IHealthChecker, HealthChecker
 from .server import IServer, Server
 from .routing import SUPPORTED_ROUTING_ALGORITHMS, RoutingContext
 
@@ -19,7 +20,7 @@ class IHttpServer(ABC):
         """Implement this to run http server"""
 
     @abstractmethod
-    def home(self, backend_server: str) -> t.Any:
+    def _home(self, backend_server: str) -> t.Any:
         """Implement this to serve request on given backend server"""
 
 
@@ -30,12 +31,12 @@ class HttpServer(IHttpServer):
         self._host = host
         self._port = port
         self._app = Flask(__name__)
-        self._app.add_url_rule("/", view_func=self.home)
+        self._app.add_url_rule("/", view_func=self._home)
 
     def run(self):
         self._app.run(host=self._host, port=self._port)
 
-    def home(self, backend_server: IServer) -> t.Any:
+    def _home(self, backend_server: IServer) -> t.Any:
         backend_server_address = backend_server.url
         response_content, status_code = self._serve_request(backend_server_address)
         return response_content, status_code
@@ -47,6 +48,16 @@ class HttpServer(IHttpServer):
 
 class LoadBalancer(HttpServer):
     _servers: t.List[IServer] = None
+    _health_checker: IHealthChecker = None
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        healthcheck_endpoint: str,
+    ):
+        self._health_checker = HealthChecker(healthcheck_endpoint)
+        super().__init__(host, port)
 
     def register_servers(self, servers: t.List[IServer]) -> None:
         self._servers = [Server(server_id=uuid4(), url=server) for server in servers]
@@ -60,11 +71,15 @@ class LoadBalancer(HttpServer):
         )
         print(f"registered routing algorithm: {self.routing_ctx.routing_strategy}")
 
-    def home(self) -> t.Any:
+    def _home(self) -> t.Any:
         backend_server: IServer = self.routing_ctx.route()
-        response_content, status_code = super().home(backend_server)
+        response_content, status_code = super()._home(backend_server)
         return make_response(response_content, status_code)
 
+    def run(self):
+        self._health_checker.start(servers=self._servers)
+        super().run()
 
-def init_alb(host: str, port: int) -> LoadBalancer:
-    return LoadBalancer(host=host, port=port)
+
+def init_alb(host: str, port: int, healthcheck_endpoint: str) -> LoadBalancer:
+    return LoadBalancer(host=host, port=port, healthcheck_endpoint=healthcheck_endpoint)
