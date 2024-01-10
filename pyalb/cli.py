@@ -5,7 +5,7 @@ import typing as t
 from pyalb import __version__
 from .routing.strategies import __all__
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("pyalb")
 logger.setLevel(logging.INFO)
 
 

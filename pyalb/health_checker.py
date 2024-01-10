@@ -1,11 +1,15 @@
 import os
 import time
+import logging
 import typing as t
 from threading import Thread
 from abc import ABC, abstractmethod
 
 import requests
 from .server import IServer
+
+logger = logging.getLogger("pyalb")
+logger.setLevel(logging.INFO)
 
 
 class IHealthChecker(ABC):
@@ -34,7 +38,6 @@ class HealthChecker(IHealthChecker):
     def _health_check(self, servers: t.List[IServer]) -> None:
         while len(servers) != len(self._unhealthy_servers):
             # cold start and wait b/w consecutive health checks
-            print(self._unhealthy_servers)
             time.sleep(10)
             for server in servers:
                 try:
@@ -46,7 +49,7 @@ class HealthChecker(IHealthChecker):
                     requests.exceptions.ConnectionError,
                     requests.exceptions.HTTPError,
                 ):
-                    print(f"{server.url} server is unhealthy")
+                    logger.warning("%s server is unhealthy", server.url)
                     server.is_healthy = False
                     self._unhealthy_servers.add(server)
                 else:
@@ -57,5 +60,5 @@ class HealthChecker(IHealthChecker):
 
     @staticmethod
     def _terminate_pyalb():
-        print("No healthy server found. Shutting down pyalb!!")
+        logger.warning("No healthy server found. Shutting down pyalb!!")
         os._exit(0)

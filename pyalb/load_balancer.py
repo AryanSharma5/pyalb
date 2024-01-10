@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from uuid import uuid4
+import logging
 import typing as t
+from uuid import uuid4
 from abc import ABC, abstractmethod
 
 import requests
@@ -10,6 +11,10 @@ from flask import Flask, Response, make_response
 from .health_checker import IHealthChecker, HealthChecker
 from .server import IServer, Server
 from .routing import SUPPORTED_ROUTING_ALGORITHMS, RoutingContext
+
+
+logger = logging.getLogger("pyalb")
+logger.setLevel(logging.INFO)
 
 
 class IHttpServer(ABC):
