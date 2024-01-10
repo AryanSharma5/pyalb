@@ -34,11 +34,12 @@ class HealthChecker(IHealthChecker):
     def _health_check(self, servers: t.List[IServer]) -> None:
         while len(servers) != len(self._unhealthy_servers):
             # cold start and wait b/w consecutive health checks
+            print(self._unhealthy_servers)
             time.sleep(10)
             for server in servers:
                 try:
                     response = requests.get(
-                        server.url + self._health_check_endpoint, timeout=1
+                        server.url + self._health_check_endpoint, timeout=3
                     )
                     response.raise_for_status()
                 except (
@@ -47,11 +48,10 @@ class HealthChecker(IHealthChecker):
                 ):
                     print(f"{server.url} server is unhealthy")
                     server.is_healthy = False
-                if not server.is_healthy:
                     self._unhealthy_servers.add(server)
                 else:
-                    server.is_healthy = True
-                    if server in self._unhealthy_servers:
+                    if not server.is_healthy:
+                        server.is_healthy = True
                         self._unhealthy_servers.remove(server)
         self._terminate_pyalb()
 

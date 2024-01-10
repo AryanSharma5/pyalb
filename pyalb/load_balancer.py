@@ -72,6 +72,8 @@ class LoadBalancer(HttpServer):
 
     def _home(self) -> t.Any:
         backend_server: IServer = self.routing_ctx.route()
+        while not backend_server.is_healthy:
+            backend_server: IServer = self.routing_ctx.route()
         response_content, status_code = super()._home(backend_server)
         return make_response(response_content, status_code)
 
