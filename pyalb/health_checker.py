@@ -20,7 +20,7 @@ class HealthChecker(IHealthChecker):
     _unhealthy_servers: t.Set[IServer] = set()
 
     def __init__(self, healthcheck_endpoint: str) -> None:
-        self._health_check_endpoint = healthcheck_endpoint
+        self._health_check_endpoint = "/" + healthcheck_endpoint
 
     def start(self, servers: t.List[IServer]) -> None:
         self._health_check_daemon = Thread(
@@ -32,8 +32,9 @@ class HealthChecker(IHealthChecker):
         self._health_check_daemon.start()
 
     def _health_check(self, servers: t.List[IServer]) -> None:
-        time.sleep(5)  # To let main process start
         while len(servers) != len(self._unhealthy_servers):
+            # cold start and wait b/w consecutive health checks
+            time.sleep(10)
             for server in servers:
                 try:
                     response = requests.get(
@@ -52,7 +53,6 @@ class HealthChecker(IHealthChecker):
                     server.is_healthy = True
                     if server in self._unhealthy_servers:
                         self._unhealthy_servers.remove(server)
-            time.sleep(10)  # Wait between consecutive healthchecks
         self._terminate_pyalb()
 
     @staticmethod

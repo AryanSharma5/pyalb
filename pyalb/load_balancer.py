@@ -55,13 +55,13 @@ class LoadBalancer(HttpServer):
         host: str,
         port: int,
         healthcheck_endpoint: str,
+        health_checker: IHealthChecker,
     ):
-        self._health_checker = HealthChecker(healthcheck_endpoint)
+        self._health_checker = health_checker(healthcheck_endpoint)
         super().__init__(host, port)
 
     def register_servers(self, servers: t.List[IServer]) -> None:
         self._servers = [Server(server_id=uuid4(), url=server) for server in servers]
-        print(f"servers registered: {self._servers}")
 
     def register_routing(self, routing_algorithm: str) -> None:
         self.routing_ctx = RoutingContext(
@@ -69,7 +69,6 @@ class LoadBalancer(HttpServer):
                 self._servers
             )
         )
-        print(f"registered routing algorithm: {self.routing_ctx.routing_strategy}")
 
     def _home(self) -> t.Any:
         backend_server: IServer = self.routing_ctx.route()
@@ -82,4 +81,9 @@ class LoadBalancer(HttpServer):
 
 
 def init_alb(host: str, port: int, healthcheck_endpoint: str) -> LoadBalancer:
-    return LoadBalancer(host=host, port=port, healthcheck_endpoint=healthcheck_endpoint)
+    return LoadBalancer(
+        host=host,
+        port=port,
+        healthcheck_endpoint=healthcheck_endpoint,
+        health_checker=HealthChecker,
+    )

@@ -58,14 +58,14 @@ def init_cli() -> t.Any:
         help="port to use by pyalb [default: 5000]",
     )
     parser.add_argument(
-        "--healthcheck-endpoint",
-        "-HCE",
+        "--healthcheck-endpoint-name",
+        "-E",
         type=str,
-        default="/health",
+        default="health",
         dest="healthcheck_endpoint",
         help="health check endpoint for your backend servers. "
         + "pyalb will call this endpoint to check health of your backend servers "
-        + "[default: /health]",
+        + "[default: health]",
     )
     args = parser.parse_args()
     return args
