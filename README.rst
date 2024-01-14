@@ -27,15 +27,20 @@ Install from PyPI::
 
 or::
 
-    $ git clone
+    $ git clone https://github.com/AryanSharma5/pyalb.git
     $ cd pyalb
     $ python -m pip install .
 
 or install in editable version::
 
-    $ git clone
+    $ git clone https://github.com/AryanSharma5/pyalb.git
     $ cd pyalb
     $ python -m pip install -r requirements-dev.txt
+
+Usage
+-----
+
+Todo
 
 License
 -------
