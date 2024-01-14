@@ -19,7 +19,6 @@ class RoundRobbin(IRoutingStrategy):
 
     def route(self) -> IServer:
         server = self._get_next_server()
-        print(f"request routed using {self.__class__.__name__} on {server}")
         return server
 
     def _get_next_server(self) -> IServer:
